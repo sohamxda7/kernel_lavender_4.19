@@ -885,4 +885,12 @@ config INPUT_SC27XX_VIBRA
 	  To compile this driver as a module, choose M here. The module will
 	  be called sc27xx_vibra.
 
+
+config ELLIPTCLABS
+	tristate "CONFIG_ELLIPTCLABS fake proximity sensor support"
+	help
+	  Say Y here if you want to use  elliptclabs' algothrim
+	  for proximity sensor
+
+
 endif
