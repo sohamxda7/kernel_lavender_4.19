@@ -281,6 +281,18 @@ config HOTPLUG_SIZE_BITS
 	 of 2.
 	 If unsure, stick with default value.
 
+config THERMAL_SWITCH
+    default n
+        bool "Support themral config switch"
+	    help
+	            Support themral config switch.
+
+config KERNEL_CUSTOM_F7A
+    default n
+        bool "Custom for hardware F7A_pcb"
+	    help
+	            Custom for F7A_pcb.
+
 config KERNEL_MODE_NEON
 	def_bool y
 
