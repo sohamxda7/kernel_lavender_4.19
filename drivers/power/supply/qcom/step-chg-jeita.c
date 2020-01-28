@@ -89,6 +89,109 @@ static struct step_chg_info *the_chip;
 #define GET_CONFIG_DELAY_MS		2000
 #define GET_CONFIG_RETRY_COUNT		50
 #define WAIT_BATT_ID_READY_MS		200
+/*
+ * Step Charging Configuration
+ * Update the table based on the battery profile
+ * Supports VBATT and SOC based source
+ * range data must be in increasing ranges and shouldn't overlap
+ */
+static struct step_chg_cfg step_chg_config = {
+	.psy_prop	= POWER_SUPPLY_PROP_VOLTAGE_NOW,
+	.prop_name	= "VBATT",
+	.hysteresis	= 100000, /* 100mV */
+	.fcc_cfg	= {
+		/* VBAT_LOW	VBAT_HIGH	FCC */
+		{3600000,	4000000,	3000000},
+		{4001000,	4200000,	2800000},
+		{4201000,	4400000,	2000000},
+	},
+	/*
+	 *	SOC STEP-CHG configuration example.
+	 *
+	 *	.psy_prop = POWER_SUPPLY_PROP_CAPACITY,
+	 *	.prop_name = "SOC",
+	 *	.fcc_cfg	= {
+	 *		//SOC_LOW	SOC_HIGH	FCC
+	 *		{20,		70,		3000000},
+	 *		{70,		90,		2750000},
+	 *		{90,		100,		2500000},
+	 *	},
+	 */
+};
+
+/*
+ * Jeita Charging Configuration
+ * Update the table based on the battery profile
+ * Please ensure that the TEMP ranges are programmed in the hw so that
+ * an interrupt is issued and a consequent psy changed will cause us to
+ * react immediately.
+ * range data must be in increasing ranges and shouldn't overlap.
+ * Gaps are okay
+ */
+#if defined(CONFIG_KERNEL_CUSTOM_D2S)
+static struct jeita_fcc_cfg jeita_fcc_config = {
+	.psy_prop	= POWER_SUPPLY_PROP_TEMP,
+	.prop_name	= "BATT_TEMP",
+	.hysteresis	= 0, /* 1degC hysteresis */
+	.fcc_cfg	= {
+		/* TEMP_LOW	TEMP_HIGH	FCC */
+		{0,		50,		300000},
+		{51,		150,		900000},
+		{151,	450,		2900000},
+		{451,	600,		1500000},
+	},
+};
+#elif defined(CONFIG_KERNEL_CUSTOM_F7A)
+static struct jeita_fcc_cfg jeita_fcc_config = {
+	.psy_prop	= POWER_SUPPLY_PROP_TEMP,
+	.prop_name	= "BATT_TEMP",
+	.hysteresis	= 0, /* 1degC hysteresis */
+	.fcc_cfg	= {
+		/* TEMP_LOW	TEMP_HIGH	FCC */
+		{0,		50,		400000},
+		{51,		150,		1200000},
+		{151,	450,		2900000},
+		{451,	600,		2000000},
+	},
+};
+#elif defined(CONFIG_KERNEL_CUSTOM_E7S)
+static struct jeita_fcc_cfg jeita_fcc_config = {
+	.psy_prop	= POWER_SUPPLY_PROP_TEMP,
+	.prop_name	= "BATT_TEMP",
+	.hysteresis	= 0, /* 1degC hysteresis */
+	.fcc_cfg	= {
+		/* TEMP_LOW	TEMP_HIGH	FCC */
+		{0,		50,		400000},
+		{51,		150,		1200000},
+		{151,		450,		2500000},
+		{451,		600,		1200000},
+	},
+};
+#elif defined(CONFIG_KERNEL_CUSTOM_E7T)
+static struct jeita_fcc_cfg jeita_fcc_config = {
+	.psy_prop	= POWER_SUPPLY_PROP_TEMP,
+	.prop_name	= "BATT_TEMP",
+	.hysteresis	= 0, /* 1degC hysteresis */
+	.fcc_cfg	= {
+		/* TEMP_LOW	TEMP_HIGH	FCC */
+		{0,		50,		400000},
+		{51,		150,		1200000},
+		{151,		450,		2500000},
+		{451,		600,		2000000},
+	},
+};
+#endif
+static struct jeita_fv_cfg jeita_fv_config = {
+	.psy_prop	= POWER_SUPPLY_PROP_TEMP,
+	.prop_name	= "BATT_TEMP",
+	.hysteresis	= 0, /* 1degC hysteresis */
+	.fv_cfg		= {
+		/* TEMP_LOW	TEMP_HIGH	FV */
+		{0,		150,		4400000},
+		{151,	450,		4400000},
+		{451,	600,		4100000},
+	},
+};
 
 static bool is_batt_available(struct step_chg_info *chip)
 {
