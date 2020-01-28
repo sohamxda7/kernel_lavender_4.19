@@ -549,8 +549,12 @@ static void msm_isp_cfg_framedrop_reg(
 	if (!runtime_init_frame_drop)
 		framedrop_period = stream_info->current_framedrop_period;
 
-	if (framedrop_period != MSM_VFE_STREAM_STOP_PERIOD)
+	if (MSM_VFE_STREAM_STOP_PERIOD != framedrop_period)
+	{
 		framedrop_pattern = 0x1;
+		if(framedrop_period > 1)
+		framedrop_pattern = framedrop_pattern << (framedrop_period-1);
+	}
 
 	if (WARN_ON(framedrop_period == 0))
 		pr_err("%s framedrop_period is 0\n", __func__);
